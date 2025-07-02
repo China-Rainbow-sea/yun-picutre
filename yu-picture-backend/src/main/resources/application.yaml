@@ -1,0 +1,40 @@
+server:
+  port: 8123
+  servlet:
+    # 项目启动域名前缀(上下文)
+    context-path: /api
+
+
+spring:
+  application:
+    name: yu-picture-backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/usercenter
+    username: root
+    password: MySQL123
+mybatis-plus:
+  configuration:
+    # 关闭驼峰命名映射,因为这里我们表就是驼峰式的不需要开启驼峰映射
+    map-underscore-to-camel-case: false
+    # 仅在开发环境打印日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: isDelete # 全局逻辑删除的实体字段名，也可以用 @TableLogic实体类注解
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+
+# 接口文档配置
+knife4j:
+  enable: true
+  openapi:
+    title: "接口文档"
+    version: 1.0
+    # 表示分组
+    group:
+      # 可以分多个组,这里使用默认分组
+      default:
+        api-rule: package
+        api-rule-resources:
+          - com.rainbowsea.yupicturebackend.controller
