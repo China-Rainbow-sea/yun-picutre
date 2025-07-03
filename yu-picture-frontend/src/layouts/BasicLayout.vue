@@ -5,7 +5,7 @@
         <GlobalHeader />
       </a-layout-header>
       <a-layout-content class="content">
-        <HomePage/>
+        <router-view />
       </a-layout-content>
       <a-layout-footer class="footer">
         <a href="https://rainbowsea.blog.csdn.net/" target="_blank"> RainbowSea 博客</a>

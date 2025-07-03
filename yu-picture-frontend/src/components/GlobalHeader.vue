@@ -11,10 +11,24 @@
     <a-col flex="auto">
       <a-menu v-model:selectedKeys="current" mode="horizontal" :items="items" @click="doMenuClick" />
     </a-col>
+<!--    用户信息展示栏 -->
     <a-col flex="120px">
       <div class="user-login-status">
         <div v-if="loginUserStore.loginUser.id">
-          {{ loginUserStore.loginUser.userName ?? '无名' }}
+          <a-dropdown>
+            <ASpace>
+              <a-avatar :src="loginUserStore.loginUser.userAvatar" />
+              {{ loginUserStore.loginUser.userName ?? '无名' }}
+            </ASpace>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item @click="doLogout">
+                  <LogoutOutlined />
+                  退出登录
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
         </div>
         <div v-else>
           <a-button type="primary" href="/user/login">登录</a-button>
@@ -27,11 +41,12 @@
 </template>
 
 <script lang="ts" setup>
-import { h, ref } from 'vue'
+import { computed, h, ref } from 'vue'
 import { HomeOutlined } from '@ant-design/icons-vue'
-import { type MenuProps } from 'ant-design-vue'
+import { type MenuProps, message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
 import { useLoginUserStore } from '@/stores/useLoginUserStore'
+import {  userLogoutUsingGet } from '@/api/userController'
 const loginUserStore = useLoginUserStore()
 loginUserStore.fetchLoginUser()
 
@@ -44,6 +59,22 @@ const doMenuClick = ({ key }: { key: string }) => {
 };
 
 
+// 用户注销
+const doLogout = async () => {
+  const res = await userLogoutUsingGet()
+  console.log(res)
+  if (res.data.code === 0) {
+    // 状态显示未登录
+    loginUserStore.setLoginUser({
+      userName: '未登录',
+    })
+    message.success('退出登录成功')
+    await router.push('/user/login')
+  } else {
+    message.error('退出登录失败，' + res.data.message)
+  }
+}
+
 // 当前选中菜单项，同时也是要高亮的菜单项
 const current = ref<string[]>([])
 // 路由跳转事件
@@ -52,18 +83,18 @@ router.afterEach((to, from) => {
   current.value = [to.path]
 })
 
-
-const items = ref<MenuProps['items']>([
+// 菜单列表
+const originItems = [
   {
     key: '/',
     icon: () => h(HomeOutlined),
     label: '主页',
-    title: '主页'
+    title: '主页',
   },
   {
-    key: '/about',
-    label: '关于',
-    title: '关于'
+    key: '/admin/userManage',
+    label: '用户管理',
+    title: '用户管理',
   },
   {
     key: 'others',
@@ -74,7 +105,24 @@ const items = ref<MenuProps['items']>([
     ),
     title: 'RainbowSea 博客地址'
   }
-])
+]
+
+// 过滤菜单项
+const filterMenus = (menus = [] as MenuProps['items']) => {
+  return menus?.filter((menu) => {
+    if (menu.key.startsWith('/admin')) {
+      const loginUser = loginUserStore.loginUser
+      if (!loginUser || loginUser.userRole !== "admin") {
+        return false
+      }
+    }
+    return true
+  })
+}
+
+// 展示在菜单的路由数组
+const items = computed<MenuProps['items']>(() => filterMenus(originItems))
+
 </script>
 
 

@@ -6,7 +6,7 @@
 </div>
 </template>
 <script setup lang="ts">
-const msg = "欢迎您的到来！！！"
+const msg = "欢迎您的到来！"
 </script>
 
 
