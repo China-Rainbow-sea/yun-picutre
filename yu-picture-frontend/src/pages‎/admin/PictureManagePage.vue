@@ -2,8 +2,15 @@
   <div id="pictureManagePage">
     <a-flex justify="space-between">
       <h2>图片管理</h2>
-      <a-button type="primary" href="/add_picture" target="_blank">+ 创建图片</a-button>
+      <!--    操作按钮-->
+      <a-space>
+        <a-button type="primary" href="/add_picture" target="_blank">+ 创建图片</a-button>
+        <a-button type="primary" href="/add_picture/batch" target="_blank" ghost>+ 批量创建图片</a-button>
+      </a-space>
     </a-flex>
+
+
+
     <!-- 搜索表单 -->
     <a-form layout="inline" :model="searchParams" @finish="doSearch">
       <a-form-item label="关键词" name="searchText">
@@ -21,6 +28,15 @@
           v-model:value="searchParams.tags"
           mode="tags"
           placeholder="请输入标签"
+          style="min-width: 180px"
+          allow-clear
+        />
+      </a-form-item>
+      <a-form-item label="审核状态" name="reviewStatus">
+        <a-select
+          v-model:value="searchParams.reviewStatus"
+          :options="PIC_REVIEW_STATUS_OPTIONS"
+          placeholder="请输入审核状态"
           style="min-width: 180px"
           allow-clear
         />
@@ -57,6 +73,12 @@
         <div>宽高比：{{ record.picScale }}</div>
         <div>大小：{{ (record.picSize / 1024).toFixed(2) }}KB</div>
       </template>
+      <!-- 审核信息 -->
+      <template v-if="column.dataIndex === 'reviewMessage'">
+        <div>审核状态：{{ PIC_REVIEW_STATUS_MAP[record.reviewStatus] }}</div>
+        <div>审核信息：{{ record.reviewMessage }}</div>
+        <div>审核人：{{ record.reviewerId }}</div>
+      </template>
       <template v-else-if="column.dataIndex === 'createTime'">
         {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
@@ -64,22 +86,39 @@
         {{ dayjs(record.editTime).format('YYYY-MM-DD HH:mm:ss') }}
       </template>
       <template v-else-if="column.key === 'action'">
-        <a-space>
-          <a-button type="link" :href="`/add_picture?id=${record.id}`" target="_blank">编辑</a-button>
+        <a-space wrap>
+          <a-button
+            v-if="record.reviewStatus !== PIC_REVIEW_STATUS_ENUM.PASS"
+            type="link"
+            @click="handleReview(record, PIC_REVIEW_STATUS_ENUM.PASS)"
+          >
+            通过
+          </a-button>
+          <a-button
+            v-if="record.reviewStatus !== PIC_REVIEW_STATUS_ENUM.REJECT"
+            type="link"
+            danger
+            @click="handleReview(record, PIC_REVIEW_STATUS_ENUM.REJECT)"
+          >
+            拒绝
+          </a-button>
+          <a-button type="link" :href="`/add_picture?id=${record.id}`" target="_blank"
+          >编辑
+          </a-button>
           <a-button type="link" danger @click="doDelete(record.id)">删除</a-button>
         </a-space>
       </template>
     </template>
-
   </a-table>
   </div>
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import dayjs from 'dayjs'
-import { listPictureByPageUsingPost } from '@/api/pictureController'
+import { doPictureReviewUsingPost, listPictureByPageUsingPost } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 import { deleteUserUsingPost } from '@/api/userController'
+import { PIC_REVIEW_STATUS_ENUM, PIC_REVIEW_STATUS_MAP, PIC_REVIEW_STATUS_OPTIONS } from '../../constants/picture'
 
 const columns = [
   {
@@ -209,5 +248,22 @@ const doDelete = async (id: string) => {
     message.error('删除失败')
   }
 }
+
+const handleReview = async (record: API.Picture, reviewStatus: number) => {
+  const reviewMessage = reviewStatus === PIC_REVIEW_STATUS_ENUM.PASS ? '管理员操作通过' : '管理员操作拒绝'
+  const res = await doPictureReviewUsingPost({
+    id: record.id,
+    reviewStatus,
+    reviewMessage,
+  })
+  if (res.data.code === 0) {
+    message.success('审核操作成功')
+    // 重新获取列表
+    fetchData()
+  } else {
+    message.error('审核操作失败，' + res.data.message)
+  }
+}
+
 
 </script>
