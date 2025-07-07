@@ -17,7 +17,6 @@
 <script setup lang="ts">
 import GlobalHeader from '@/components/GlobalHeader.vue'
 import { healthUsingGet } from '@/api/mainController'
-import HomePage from '@/pages‎/HomePage.vue'
 
 healthUsingGet().then((res) => {
   console.log(res)
