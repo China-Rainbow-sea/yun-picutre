@@ -46,7 +46,7 @@ knife4j:
 # 对象存储配置（需要从腾讯云获取）
 #cos:
 #  client:
-#    host: 存储桶的域名
+#    host: 存储桶的域名 https://xxx.myqcloud.com
 #    secretId: 用户密钥的ID或者账户
 #    secretKey: 用户密钥的密码
 #    region: 表示对象存储桶所在设置的地域名

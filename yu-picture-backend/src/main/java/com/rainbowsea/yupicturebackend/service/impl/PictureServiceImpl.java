@@ -172,6 +172,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         ThrowUtils.throwIf(loginUser == null, ErrorCode.NO_AUTH_ERROR);
 
         // 用于判断是新增还是更新图片
+        // 校验空间是否存在;
         Long pictureId = null;
         if (pictureUploadRequest != null) {  // 上传请求存在, 说明是新增图片
             pictureId = pictureUploadRequest.getId();
@@ -201,6 +202,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         picture.setPicHeight(uploadPictureResult.getPicHeight());
         picture.setPicScale(uploadPictureResult.getPicScale());
         picture.setPicFormat(uploadPictureResult.getPicFormat());
+        picture.setUserId(loginUser.getId());
 
         // 操作数据库
         // 如果 pictureId 不为空，表示更新，否则就是新增
