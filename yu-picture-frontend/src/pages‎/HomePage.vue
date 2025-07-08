@@ -46,7 +46,8 @@
                 <img
                   style="height: 180px; object-fit: cover"
                   :alt="picture.name"
-                  :src="picture.url"
+                  :src="picture.thumbnailUrl ?? picture.url"
+                  loading="lazy"
                 />
               </template>
               <a-card-meta :title="picture.name">
@@ -71,7 +72,11 @@
 <script setup lang="ts">
 // 数据
 import { computed, onMounted, reactive, ref } from 'vue'
-import { listPictureTagCategoryUsingGet, listPictureVoByPageUsingPost } from '@/api/pictureController'
+import {
+  listPictureTagCategoryUsingGet,
+  listPictureVoByPageUsingPost,
+  listPictureVoByPageWithCacheUsingPost
+} from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
 
@@ -142,7 +147,10 @@ const fetchData = async () => {
       params.tags.push(tagList.value[index])
     }
   })
-  const res = await listPictureVoByPageUsingPost(params)
+
+  // 没有走缓存 const res = await listPictureVoByPageUsingPost(params)
+  // 走了缓存（caffeine本地缓存和 redis 缓存） listPictureVoByPageWithCacheUsingPost
+  const res = await listPictureVoByPageWithCacheUsingPost(params)
   if (res.data.data) {
     dataList.value = res.data.data.records ?? []
     total.value = res.data.data.total ?? 0
