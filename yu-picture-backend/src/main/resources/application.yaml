@@ -3,7 +3,10 @@ server:
   servlet:
     # 项目启动域名前缀(上下文)
     context-path: /api
-
+  # cookie 30 天过期
+    session:
+      cookie:
+        max-age: 2592000
 
 spring:
   application:
@@ -13,7 +16,22 @@ spring:
     url: jdbc:mysql://localhost:3306/yu_picture
     username: root
     password: MySQL123
-# 开放更大的文件上传体积
+  # redis 配置
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    connect-timeout: 5000
+  # Session 配置 30 天过期和 cookie 过期保持一致
+  session:
+    store-type: redis
+    # 一天86400 * 30
+    timeout: 2592000
+
+  # 表示开发环境接入 application-local.yaml 的配置
+  profiles:
+    active: local
+  # 开放更大的文件上传体积
   servlet:
     multipart:
       max-file-size: 10MB

@@ -103,4 +103,10 @@ public interface PictureService extends IService<Picture> {
     );
 
 
+    /**
+     * 删除图片，包含删除对象存储当中的图片
+     * @param oldPicture
+     */
+    public void clearPictureFile(Picture oldPicture);
+
 }
