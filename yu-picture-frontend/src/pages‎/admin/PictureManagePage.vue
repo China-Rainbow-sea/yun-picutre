@@ -182,7 +182,8 @@ const columns = [
   },
 ]
 // 数据
-const dataList = ref([])
+// const dataList = ref([])
+const dataList = ref<API.Picture[]>([])
 const total = ref(0)
 
 // 搜索条件
@@ -208,6 +209,7 @@ const pagination = computed(() => {
 const fetchData = async () => {
   const res = await listPictureByPageUsingPost({
     ...searchParams,
+    nullSpaceId: true,
   })
   if (res.data.data) {
     dataList.value = res.data.data.records ?? []

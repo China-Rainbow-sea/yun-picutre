@@ -30,6 +30,8 @@ const props = defineProps<Props>()
 const fileUrl = ref<string>()
 const loading = ref<boolean>(false)
 
+
+
 /**
  * 上传图片
  * @param file

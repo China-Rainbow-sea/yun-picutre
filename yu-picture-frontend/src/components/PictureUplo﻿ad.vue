@@ -44,7 +44,11 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
 const loading = ref<boolean>(false)
 
 const params = props.picture ? { id: props.picture.id } : {};
-
+interface Props {
+  picture?: API.PictureVO
+  spaceId?: number
+  onSuccess?: (newPicture: API.PictureVO) => void
+}
 
 /**
  * 上传图片
@@ -53,7 +57,9 @@ const params = props.picture ? { id: props.picture.id } : {};
 const handleUpload = async ({ file }: any) => {
   loading.value = true
   try {
-    const params = props.picture ? { id: props.picture.id } : {};
+    // 上传时传递 spaceId
+    const params: API.PictureUploadRequest = props.picture ? { id: props.picture.id } : {}
+    params.spaceId = props.spaceId;
     const res = await uploadPictureUsingPost(params, {}, file)
     if (res.data.code === 0 && res.data.data) {
       message.success('图片上传成功')
