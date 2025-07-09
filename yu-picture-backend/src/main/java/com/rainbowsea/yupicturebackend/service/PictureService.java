@@ -3,6 +3,7 @@ package com.rainbowsea.yupicturebackend.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.rainbowsea.yupicturebackend.model.dto.picture.PictureEditRequest;
 import com.rainbowsea.yupicturebackend.model.dto.picture.PictureQueryRequest;
 import com.rainbowsea.yupicturebackend.model.dto.picture.PictureReviewRequest;
 import com.rainbowsea.yupicturebackend.model.dto.picture.PictureUploadByBatchRequest;
@@ -109,4 +110,27 @@ public interface PictureService extends IService<Picture> {
      */
     public void clearPictureFile(Picture oldPicture);
 
+
+    /**
+     * 校验空间图片的权限
+     * @param loginUser
+     * @param picture
+     */
+    void checkPictureAuth(User loginUser, Picture picture);
+
+
+    /**
+     * 删除图片
+     * @param pictureId
+     * @param loginUser
+     */
+    void deletePicture(long pictureId, User loginUser);
+
+
+    /**
+     * 编辑图片
+     * @param pictureEditRequest
+     * @param loginUser
+     */
+    void editPicture(PictureEditRequest pictureEditRequest, User loginUser);
 }
