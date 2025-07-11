@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.rainbowsea.yupicturebackend.annotation.AuthCheck;
+import com.rainbowsea.yupicturebackend.api.imagesearch.ImageSearchApiFacade;
+import com.rainbowsea.yupicturebackend.api.imagesearch.model.ImageSearchResult;
 import com.rainbowsea.yupicturebackend.common.BaseResponse;
 import com.rainbowsea.yupicturebackend.common.DeleteRequest;
 import com.rainbowsea.yupicturebackend.common.ResultUtils;
@@ -14,12 +16,15 @@ import com.rainbowsea.yupicturebackend.constant.UserConstant;
 import com.rainbowsea.yupicturebackend.exception.BusinessException;
 import com.rainbowsea.yupicturebackend.exception.ErrorCode;
 import com.rainbowsea.yupicturebackend.exception.ThrowUtils;
+import com.rainbowsea.yupicturebackend.model.dto.picture.PictureEditByBatchRequest;
 import com.rainbowsea.yupicturebackend.model.dto.picture.PictureEditRequest;
 import com.rainbowsea.yupicturebackend.model.dto.picture.PictureQueryRequest;
 import com.rainbowsea.yupicturebackend.model.dto.picture.PictureReviewRequest;
 import com.rainbowsea.yupicturebackend.model.dto.picture.PictureUpdateRequest;
 import com.rainbowsea.yupicturebackend.model.dto.picture.PictureUploadByBatchRequest;
 import com.rainbowsea.yupicturebackend.model.dto.picture.PictureUploadRequest;
+import com.rainbowsea.yupicturebackend.model.dto.picture.SearchPictureByColorRequest;
+import com.rainbowsea.yupicturebackend.model.dto.picture.SearchPictureByPictureRequest;
 import com.rainbowsea.yupicturebackend.model.entity.Picture;
 import com.rainbowsea.yupicturebackend.model.entity.Space;
 import com.rainbowsea.yupicturebackend.model.entity.User;
@@ -43,6 +48,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -373,5 +379,72 @@ public class PictureController {
         return ResultUtils.success(uploadCount);
     }
 
+
+    /**
+     * 以图搜图
+     */
+    @PostMapping("/search/picture")
+    public BaseResponse<List<ImageSearchResult>> searchPictureByPicture(@RequestBody SearchPictureByPictureRequest searchPictureByPictureRequest) {
+        ThrowUtils.throwIf(searchPictureByPictureRequest == null, ErrorCode.PARAMS_ERROR);
+        Long pictureId = searchPictureByPictureRequest.getPictureId();
+        ThrowUtils.throwIf(pictureId == null || pictureId <= 0, ErrorCode.PARAMS_ERROR);
+        Picture oldPicture = pictureService.getById(pictureId);
+
+        ThrowUtils.throwIf(oldPicture == null, ErrorCode.NOT_FOUND_ERROR);
+        // to do 以图搜图方案2 可行。
+        // 图片:https://luli-1319967679.cos.ap-guangzhou.myqcloud.com/space/4/2025-01-26_7uVwWUy8uX45b58y.webp
+        String url = oldPicture.getUrl()+"?imageMogr2/format/png";
+        List<ImageSearchResult> resultList = ImageSearchApiFacade.searchImage(url);
+        //List<ImageSearchResult> resultList = ImageSearchApiFacade.searchImage(oldPicture.getUrl());
+        return ResultUtils.success(resultList);
+    }
+
+
+    /**
+     * 按照颜色搜索
+     *
+     * @param searchPictureByColorRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/search/color")
+    public BaseResponse<List<PictureVO>> searchPictureByColor(@RequestBody SearchPictureByColorRequest searchPictureByColorRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(searchPictureByColorRequest == null, ErrorCode.PARAMS_ERROR);
+        String picColor = searchPictureByColorRequest.getPicColor();
+        Long spaceId = searchPictureByColorRequest.getSpaceId();
+        User loginUser = userService.getLoginUser(request);
+        List<PictureVO> result = pictureService.searchPictureByColor(spaceId, picColor, loginUser);
+        return ResultUtils.success(result);
+    }
+
+
+    /**
+     * 批量编辑图片
+     * @param pictureEditByBatchRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/edit/batch")
+    public BaseResponse<Boolean> editPictureByBatch(@RequestBody PictureEditByBatchRequest pictureEditByBatchRequest,
+                                                    HttpServletRequest request) {
+        ThrowUtils.throwIf(pictureEditByBatchRequest == null, ErrorCode.PARAMS_ERROR);
+        User loginUser = userService.getLoginUser(request);
+        pictureService.editPictureByBatch(pictureEditByBatchRequest, loginUser);
+        return ResultUtils.success(true);
+    }
+
+
+
+
+    /**
+     * to do 以图搜图 webp 图片搜索问题方案1
+     * 搜索相似图片
+     */
+    //@PostMapping("/search/picture")
+    //public BaseResponse<List<ImageSearchResult>> getSimilarPicture(@RequestBody SearchPictureByPictureRequest request) throws IOException {
+    //    ThrowUtils.throwIf(request == null, ErrorCode.NO_AUTH_ERROR);
+    //    List<ImageSearchResult> similarImage = pictureService.getSimilarPicture(request);
+    //    return ResultUtils.success(similarImage);
+    //}
 
 }

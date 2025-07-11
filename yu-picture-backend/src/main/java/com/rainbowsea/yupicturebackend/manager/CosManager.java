@@ -4,15 +4,21 @@ import cn.hutool.core.io.FileUtil;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.exception.CosClientException;
 import com.qcloud.cos.model.COSObject;
+import com.qcloud.cos.model.COSObjectInputStream;
 import com.qcloud.cos.model.GetObjectRequest;
 import com.qcloud.cos.model.PutObjectRequest;
 import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.model.ciModel.persistence.PicOperations;
+import com.qcloud.cos.utils.IOUtils;
 import com.rainbowsea.yupicturebackend.config.CosClientConfig;
+import com.rainbowsea.yupicturebackend.exception.BusinessException;
+import com.rainbowsea.yupicturebackend.exception.ErrorCode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +27,7 @@ import java.util.List;
  * 提供通用的对象存储操作，比如文件上传、文件下载等。
  */
 @Component
+@Slf4j
 public class CosManager {
 
     @Resource
@@ -112,6 +119,33 @@ public class CosManager {
     public void deleteObject(String key) throws CosClientException {
         cosClient.deleteObject(cosClientConfig.getBucket(), key);
     }
+
+
+    /**
+     * to do 以图搜图 webp 图片搜索问题方案1,
+     * 将COS中的文件下载到本地
+     * @param filepath  文件路径，如folder/picture.jpg
+     * @param localPath 本地存储路径
+     */
+    //public void downloadPicture(String filepath, String localPath) throws IOException {
+    //    File file = new File(localPath);
+    //    COSObjectInputStream cosObjectInput = null;
+    //    try {
+    //        COSObject cosObject = this.getObject(filepath);
+    //        cosObjectInput = cosObject.getObjectContent();
+    //        // 将输入流转为字节数组
+    //        byte[] data = IOUtils.toByteArray(cosObjectInput);
+    //        // 将字节数组写入本地文件
+    //        FileUtil.writeBytes(data, file);
+    //    } catch (Exception e) {
+    //        log.error("file download error, filepath = {}", filepath, e);
+    //        throw new BusinessException(ErrorCode.SYSTEM_ERROR, "下载失败");
+    //    } finally {
+    //        if (cosObjectInput != null) {
+    //            cosObjectInput.close();
+    //        }
+    //    }
+    //}
 
 
 }
