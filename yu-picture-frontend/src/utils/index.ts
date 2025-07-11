@@ -21,3 +21,22 @@ export function downloadImage(url?: string, fileName?: string) {
   }
   saveAs(url, fileName)
 }
+
+
+/**
+ * 由于后端数据万象计算出的色值格式不是标准的，存在类似 0x080e0 的色值，需要转换为标准 16 进制色值：
+ * 将颜色值转换为标准 #RRGGBB 格式
+ * @param input
+ */
+export function toHexColor(input: string) {
+  // 去掉 0x 前缀
+  const colorValue = input.startsWith('0x') ? input.slice(2) : input
+
+  // 将剩余部分解析为十六进制数，再转成 6 位十六进制字符串
+  const hexColor = parseInt(colorValue, 16).toString(16).padStart(6, '0')
+
+  // 返回标准 #RRGGBB 格式
+  return `#${hexColor}`
+}
+
+
