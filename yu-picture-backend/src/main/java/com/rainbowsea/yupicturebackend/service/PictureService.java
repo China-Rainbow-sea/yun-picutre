@@ -3,7 +3,9 @@ package com.rainbowsea.yupicturebackend.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.rainbowsea.yupicturebackend.api.aliyunai.model.CreateOutPaintingTaskResponse;
 import com.rainbowsea.yupicturebackend.api.imagesearch.model.ImageSearchResult;
+import com.rainbowsea.yupicturebackend.model.dto.picture.CreatePictureOutPaintingTaskRequest;
 import com.rainbowsea.yupicturebackend.model.dto.picture.PictureEditByBatchRequest;
 import com.rainbowsea.yupicturebackend.model.dto.picture.PictureEditRequest;
 import com.rainbowsea.yupicturebackend.model.dto.picture.PictureQueryRequest;
@@ -207,4 +209,14 @@ public interface PictureService extends IService<Picture> {
      * @throws IOException
      */
     //List<ImageSearchResult> getSimilarPicture(SearchPictureByPictureRequest request) throws IOException;
+
+
+    /**
+     * 创建 阿里百炼扩图任务
+     * @param createPictureOutPaintingTaskRequest
+     * @param loginUser
+     * @return
+     */
+    public CreateOutPaintingTaskResponse createPictureOutPaintingTask(CreatePictureOutPaintingTaskRequest createPictureOutPaintingTaskRequest,
+                                                                      User loginUser);
 }

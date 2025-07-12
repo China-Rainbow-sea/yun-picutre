@@ -8,6 +8,9 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.rainbowsea.yupicturebackend.api.aliyunai.AliYunAiApi;
+import com.rainbowsea.yupicturebackend.api.aliyunai.model.CreateOutPaintingTaskRequest;
+import com.rainbowsea.yupicturebackend.api.aliyunai.model.CreateOutPaintingTaskResponse;
 import com.rainbowsea.yupicturebackend.exception.BusinessException;
 import com.rainbowsea.yupicturebackend.exception.ErrorCode;
 import com.rainbowsea.yupicturebackend.exception.ThrowUtils;
@@ -18,6 +21,7 @@ import com.rainbowsea.yupicturebackend.manager.upload.PictureUploadTemplate;
 import com.rainbowsea.yupicturebackend.manager.upload.UrlPictureUpload;
 import com.rainbowsea.yupicturebackend.mapper.PictureMapper;
 import com.rainbowsea.yupicturebackend.model.dto.file.UploadPictureResult;
+import com.rainbowsea.yupicturebackend.model.dto.picture.CreatePictureOutPaintingTaskRequest;
 import com.rainbowsea.yupicturebackend.model.dto.picture.PictureEditByBatchRequest;
 import com.rainbowsea.yupicturebackend.model.dto.picture.PictureEditRequest;
 import com.rainbowsea.yupicturebackend.model.dto.picture.PictureQueryRequest;
@@ -55,6 +59,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -88,6 +93,10 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
 
     @Resource
     private TransactionTemplate transactionTemplate;
+
+
+    @Resource
+    private AliYunAiApi aliYunAiApi;
 
     @Override
     public void validPicture(Picture picture) {
@@ -747,8 +756,6 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
 
 
 
-
-
     /**
      * nameRule 格式：图片{序号}
      *
@@ -771,6 +778,28 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         }
     }
 
+
+
+    @Override
+    public CreateOutPaintingTaskResponse createPictureOutPaintingTask(CreatePictureOutPaintingTaskRequest createPictureOutPaintingTaskRequest, User loginUser) {
+        // 获取图片信息
+        Long pictureId = createPictureOutPaintingTaskRequest.getPictureId();
+        Picture picture = Optional.ofNullable(this.getById(pictureId))
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ERROR, "图片不存在"));
+
+        // 校验权限
+        checkPictureAuth(loginUser,picture);
+
+        // 创建扩图任务
+        CreateOutPaintingTaskRequest createOutPaintingTaskRequest = new CreateOutPaintingTaskRequest();
+        CreateOutPaintingTaskRequest.Input input = new CreateOutPaintingTaskRequest.Input();
+        input.setImageUrl(picture.getUrl());
+        createOutPaintingTaskRequest.setInput(input);
+        createOutPaintingTaskRequest.setParameters(createPictureOutPaintingTaskRequest.getParameters());
+
+        // 创建任务
+        return aliYunAiApi.createOutPaintingTask(createOutPaintingTaskRequest);
+    }
 
 
 }
