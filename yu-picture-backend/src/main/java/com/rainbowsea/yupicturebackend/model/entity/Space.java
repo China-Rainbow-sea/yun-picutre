@@ -43,6 +43,12 @@ public class Space implements Serializable {
     private Long maxCount;
 
     /**
+     * 空间类型：0-私有 1-团队
+     */
+    private Integer spaceType;
+
+
+    /**
      * 当前空间下图片的总大小
      */
     private Long totalSize;
