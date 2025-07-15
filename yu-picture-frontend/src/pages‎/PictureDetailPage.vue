@@ -98,7 +98,7 @@ import {
 import { useRouter } from 'vue-router'
 import { downloadImage, formatSize, toHexColor } from '@/utils'
 import ShareModal from '@/components/ShareModal.vue'
-// import { SPACE_PERMISSION_ENUM } from '@/constants/space.ts'
+import { SPACE_PERMISSION_ENUM } from '@/constants/space.ts'
 
 interface Props {
   id: string | number
@@ -108,17 +108,15 @@ const props = defineProps<Props>()
 const picture = ref<API.PictureVO>({})
 
 // 通用权限检查函数
-// function createPermissionChecker(permission: string) {
-//   return computed(() => {
-//     return (picture.value.permissionList ?? []).includes(permission)
-//   })
-// }
+function createPermissionChecker(permission: string) {
+  return computed(() => {
+    return (picture.value.permissionList ?? []).includes(permission)
+  })
+}
 
 // 定义权限检查
-const canEdit = true;
-const canDelete = true;
-// const canEdit = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_EDIT)
-// const canDelete = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_DELETE)
+const canEdit = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_EDIT)
+const canDelete = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_DELETE)
 
 // 获取图片详情
 const fetchPictureDetail = async () => {
