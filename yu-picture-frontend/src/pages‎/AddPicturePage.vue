@@ -32,7 +32,7 @@
         :picture="picture"
         :spaceId="spaceId"
         :space="space"
-        :onSuccess="onCropSuccess"
+        :onSuccess="onSuccess"
       />
       <ImageOutPainting
         ref="imageOutPaintingRef"
@@ -81,7 +81,7 @@
 </template>
 <script setup lang="ts">
 import PictureUpload from '@/components/PictureUplo﻿ad.vue'
-import { computed, h, onMounted, reactive, ref } from 'vue'
+import { computed, h, onMounted, reactive, ref, watchEffect } from 'vue'
 import {
   editPictureUsingPost,
   getPictureVoByIdUsingGet,
@@ -209,21 +209,7 @@ const onCropSuccess = (newPicture: API.PictureVO) => {
 }
 
 
-// 获取空间信息
-const space = ref<API.SpaceVO>()
 
-// 获取空间信息
-const fetchSpace = async () => {
-  // 获取数据
-  if (spaceId.value) {
-    const res = await getSpaceVoByIdUsingGet({
-      id: spaceId.value,
-    })
-    if (res.data.code === 0 && res.data.data) {
-      space.value = res.data.data
-    }
-  }
-}
 
 onMounted(() => {
   getOldPicture()
@@ -250,6 +236,24 @@ const onImageOutPaintingSuccess = (newPicture: API.PictureVO) => {
 }
 
 
+const space = ref<API.SpaceVO>()
+
+// 获取空间信息
+const fetchSpace = async () => {
+  // 获取数据
+  if (spaceId.value) {
+    const res = await getSpaceVoByIdUsingGet({
+      id: spaceId.value,
+    })
+    if (res.data.code === 0 && res.data.data) {
+      space.value = res.data.data
+    }
+  }
+}
+
+watchEffect(() => {
+  fetchSpace()
+})
 
 </script>
 

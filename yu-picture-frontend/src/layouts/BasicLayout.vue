@@ -11,7 +11,7 @@
         </a-layout-content>
       </a-layout>
       <a-layout-footer class="footer">
-        <a href="https://rainbowsea.blog.csdn.net/" target="_blank"> RainbowSea 博客</a>
+        <a href="https://rainbowsea.blog.csdn.net/" target="_blank"> RainbowSea 博客(阅读量50W+)</a>
       </a-layout-footer>
     </a-layout>
   </div>

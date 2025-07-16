@@ -123,9 +123,18 @@ const originItems = [
     label: h(
       'a',
       { href: 'https://rainbowsea.blog.csdn.net', target: '_blank' },
-      'RainbowSea 博客'
+      'RainbowSea 博客(阅读量50W+)'
     ),
     title: 'RainbowSea 博客地址'
+  },
+  {
+    key: 'feishujianyi',
+    label: h(
+      'a',
+      { href: 'https://rainbowsea.blog.csdn.net', target: '_blank' },
+      '欢迎提供建议'
+    ),
+    title: '欢迎提供建议'
   }
 ]
 
