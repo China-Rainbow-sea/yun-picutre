@@ -4,7 +4,7 @@
       <RouterLink to="/">
         <div class="title-bar">
           <img class="logo" src="../assets/logo.jpg" alt="logo" />
-          <div class="title">智能协同云图库</div>
+          <div class="title">蒲公英图仓</div>
         </div>
       </RouterLink>
     </a-col>
@@ -131,7 +131,7 @@ const originItems = [
     key: 'feishujianyi',
     label: h(
       'a',
-      { href: 'https://rainbowsea.blog.csdn.net', target: '_blank' },
+      { href: 'https://juejin.cn/post/7527612475177435155', target: '_blank' },
       '欢迎提供建议'
     ),
     title: '欢迎提供建议'

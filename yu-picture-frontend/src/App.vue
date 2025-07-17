@@ -4,7 +4,6 @@
     <a-config-provider :locale="zhCN">
       <BasicLayout />
     </a-config-provider>
-    <BasicLayout />
   </div>
 </template>
 <script setup lang="ts">
