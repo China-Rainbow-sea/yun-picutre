@@ -4,6 +4,8 @@ target/
 !**/src/test/**/target/
 ### Custom ###
 application-local.yml
+application-prod.yml
+
 
 
 

@@ -31,7 +31,7 @@ spring:
 
   # 表示开发环境接入 application-local.yaml 的配置
   profiles:
-    active: local
+    active: prod
   # 开放更大的文件上传体积
   servlet:
     multipart:
